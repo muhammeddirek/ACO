@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ACO Rota Optimizasyonu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Karınca Kolonisi (ACO) Rota Optimizasyonu</h1>
+    <p>Başlangıç noktanızı seçin, hedeflerinizi ekleyin ve optimizasyonu çalıştırın.</p>
+
+    <div class="form-group">
+      <label for="startSelect">Başlangıç Noktası</label>
+      <select id="startSelect"></select>
+    </div>
+
+    <div class="form-group">
+      <label for="destSelect">Hedef Noktası</label>
+      <select id="destSelect"></select>
+      <button id="addDestBtn" class="btn btn-add">Ekle</button>
+    </div>
+
+    <div class="destination-list">
+      <h2>Hedef Listesi</h2>
+      <table id="destTable">
+        <thead>
+          <tr><th>Nokta Adı</th><th>İşlem</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <button id="optimizeBtn" class="btn">Optimizasyonu Çalıştır</button>
+
+    <div id="result" class="result-box"></div>
+
+    <h2>Harita</h2>
+    <canvas id="mapCanvas" width="600" height="400"></canvas>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
