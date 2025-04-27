@@ -71,6 +71,15 @@ p {
   margin-top: 10px;
   align-self: flex-start;
 }
+.btn-reset {
+  background-color: #e74c3c;
+  margin-top: 10px;
+}
+
+.btn-reset:hover {
+  background-color: #c0392b;
+}
+
 
 .destination-list {
   margin-bottom: 30px;

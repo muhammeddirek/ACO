@@ -22,6 +22,16 @@ def load_cities_from_csv(filename: str) -> list[dict]:
 
 CITIES = load_cities_from_csv('cities.csv')
 
+def generate_all_edges(cities):
+    edges = []
+    city_ids = [city['id'] for city in cities]
+    for i in range(len(city_ids)):
+        for j in range(i+1, len(city_ids)):
+            edges.append((city_ids[i], city_ids[j]))
+    return edges
+
+EDGES = generate_all_edges(CITIES)
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -47,9 +57,15 @@ def run_aco():
     city_map = {c['id']: (c['x'], c['y']) for c in CITIES}
     coords = [city_map[cid] for cid in unique_ids]
 
-    dist_matrix = create_distance_matrix(coords)
+    local_edges = [(unique_ids.index(f), unique_ids.index(t))
+                   for f, t in EDGES if f in unique_ids and t in unique_ids]
 
-    ac = AntColony(dist_matrix, n_ants, n_iters, alpha, beta, rho)
+    if not local_edges:
+        return jsonify({'error': 'Seçilen şehirler arasında hiç yol tanımlı değil!'}), 400
+
+    dist_matrix = create_distance_matrix(coords, local_edges)
+
+    ac = AntColony(dist_matrix, n_ants, n_iters, alpha, beta, rho, start_city=0)
     best_route, best_distance = ac.run()
 
     best_global_ids = [unique_ids[i] for i in best_route]
@@ -61,12 +77,13 @@ def run_aco():
         'bestLength': best_distance
     })
 
-def create_distance_matrix(coords: list[tuple[float, float]]) -> np.ndarray:
+def create_distance_matrix(coords: list[tuple[float, float]], edges: list[tuple[int, int]]) -> np.ndarray:
     n = len(coords)
-    matrix = np.zeros((n, n))
-    for i in range(n):
-        for j in range(n):
-            matrix[i, j] = np.linalg.norm(np.array(coords[i]) - np.array(coords[j]))
+    matrix = np.full((n, n), np.inf)
+    for from_idx, to_idx in edges:
+        distance = np.linalg.norm(np.array(coords[from_idx]) - np.array(coords[to_idx]))
+        matrix[from_idx, to_idx] = distance
+        matrix[to_idx, from_idx] = distance
     return matrix
 
 if __name__ == '__main__':
